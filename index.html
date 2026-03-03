@@ -10,25 +10,25 @@ body{
     margin:0;
     font-family:Arial;
     background: linear-gradient(135deg,#141e30,#243b55);
-    color:white;
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
+    color:white;
 }
 
 .box{
     background:#1f2a40;
-    padding:30px;
+    padding:25px;
     border-radius:15px;
-    width:320px;
+    width:340px;
     text-align:center;
 }
 
 input{
-    width:90%;
+    width:95%;
     padding:10px;
-    margin:8px 0;
+    margin:6px 0;
     border:none;
     border-radius:8px;
 }
@@ -46,10 +46,10 @@ button{
 }
 
 .toggle{
-    margin-top:15px;
-    font-size:14px;
+    margin-top:10px;
     cursor:pointer;
     color:#00e5ff;
+    font-size:14px;
 }
 
 #dashboard{
@@ -64,8 +64,14 @@ button{
 
 <h2 id="formTitle">Login</h2>
 
+<div id="extraFields" style="display:none;">
 <input type="text" id="username" placeholder="Username">
+<input type="email" id="email" placeholder="Email">
+<input type="text" id="mobile" placeholder="Mobile Number">
+</div>
+
 <input type="password" id="password" placeholder="Password">
+<input type="password" id="confirmPassword" placeholder="Confirm Password" style="display:none;">
 
 <button onclick="handleAuth()">Login</button>
 
@@ -88,38 +94,69 @@ let isLogin = true;
 
 function toggleForm(){
     isLogin = !isLogin;
+
     document.getElementById("formTitle").innerText = isLogin ? "Login" : "Signup";
     document.querySelector("button").innerText = isLogin ? "Login" : "Signup";
     document.querySelector(".toggle").innerText = 
         isLogin ? "Don't have account? Signup" : "Already have account? Login";
+
+    document.getElementById("extraFields").style.display = isLogin ? "none" : "block";
+    document.getElementById("confirmPassword").style.display = isLogin ? "none" : "block";
 }
 
 function handleAuth(){
-    let user = document.getElementById("username").value;
-    let pass = document.getElementById("password").value;
 
-    if(user==="" || pass===""){
-        document.getElementById("msg").innerText="Fill all fields!";
-        return;
-    }
+    let password = document.getElementById("password").value;
+    let confirmPassword = document.getElementById("confirmPassword").value;
 
     let users = JSON.parse(localStorage.getItem("users")) || {};
 
     if(isLogin){
-        if(users[user] && users[user] === pass){
-            loginSuccess(user);
+
+        let email = prompt("Enter your registered email:");
+
+        if(users[email] && users[email].password === password){
+            loginSuccess(users[email].username);
         }else{
-            document.getElementById("msg").innerText="Invalid credentials!";
+            document.getElementById("msg").innerText="Invalid Email or Password!";
         }
+
     }else{
-        if(users[user]){
-            document.getElementById("msg").innerText="User already exists!";
-        }else{
-            users[user] = pass;
-            localStorage.setItem("users", JSON.stringify(users));
-            document.getElementById("msg").innerText="Signup successful! Now login.";
-            toggleForm();
+
+        let username = document.getElementById("username").value;
+        let email = document.getElementById("email").value;
+        let mobile = document.getElementById("mobile").value;
+
+        if(username==="" || email==="" || mobile==="" || password==="" || confirmPassword===""){
+            document.getElementById("msg").innerText="Fill all fields!";
+            return;
         }
+
+        if(password !== confirmPassword){
+            document.getElementById("msg").innerText="Passwords do not match!";
+            return;
+        }
+
+        if(mobile.length !== 10){
+            document.getElementById("msg").innerText="Invalid mobile number!";
+            return;
+        }
+
+        if(users[email]){
+            document.getElementById("msg").innerText="Email already registered!";
+            return;
+        }
+
+        users[email] = {
+            username: username,
+            mobile: mobile,
+            password: password
+        };
+
+        localStorage.setItem("users", JSON.stringify(users));
+
+        document.getElementById("msg").innerText="Signup Successful! Please Login.";
+        toggleForm();
     }
 }
 
