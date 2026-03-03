@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cashflow Community Dashboard</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      margin: 0;
+      color: white;
+    }
+
+    .header {
+      background: #1e293b;
+      padding: 15px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .profile-img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #22c55e;
+    }
+
+    input[type="file"] {
+      margin-top: 10px;
+    }
+
+    button {
+      background: #22c55e;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #16a34a;
+    }
+
+    .logout {
+      background: #ef4444;
+    }
+
+    .logout:hover {
+      background: #dc2626;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="header">
+  Cashflow Community Dashboard
+</div>
+
+<div class="container">
+
+  <!-- Profile Picture -->
+  <div class="card" style="text-align:center;">
+    <h3>👤 Profile Picture</h3>
+    <img id="profilePic" class="profile-img">
+    <br>
+    <input type="file" id="imageUpload" accept="image/*">
+  </div>
+
+  <!-- User Info -->
+  <div class="card">
+    <h3>📄 User Info</h3>
+    <p><strong>Name:</strong> <span id="name"></span></p>
+    <p><strong>Email:</strong> <span id="email"></span></p>
+    <p><strong>Sponsor ID:</strong> <span id="sponsor"></span></p>
+    <p><strong>Process ID:</strong> <span id="process"></span></p>
+  </div>
+
+  <!-- Demat Referral -->
+  <div class="card">
+    <h3>💰 Demat Referral</h3>
+    <p>Share your demat referral link and earn commission.</p>
+    <button onclick="copyLink()">Copy Referral Link</button>
+  </div>
+
+  <!-- Logout -->
+  <div class="card">
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+
+</div>
+
+<script>
+
+  // Load user data
+  document.getElementById("name").innerText = localStorage.getItem("name");
+  document.getElementById("email").innerText = localStorage.getItem("email");
+  document.getElementById("sponsor").innerText = localStorage.getItem("sponsorId");
+  document.getElementById("process").innerText = localStorage.getItem("processId");
+
+  // Profile Image Load
+  const savedImage = localStorage.getItem("profileImage");
+  if (savedImage) {
+    document.getElementById("profilePic").src = savedImage;
+  } else {
+    document.getElementById("profilePic").src = "https://via.placeholder.com/120";
+  }
+
+  // Upload Image
+  document.getElementById("imageUpload").addEventListener("change", function() {
+    const reader = new FileReader();
+    reader.onload = function() {
+      localStorage.setItem("profileImage", reader.result);
+      document.getElementById("profilePic").src = reader.result;
+    };
+    reader.readAsDataURL(this.files[0]);
+  });
+
+  // Copy Referral Link
+  function copyLink() {
+    const link = "https://your-demat-referral-link.com";
+    navigator.clipboard.writeText(link);
+    alert("Referral Link Copied!");
+  }
+
+  // Logout
+  function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+  }
+
+</script>
+
+</body>
+</html>
