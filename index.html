@@ -1,83 +1,152 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CashFlow Community</title>
+
 <style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    color: white;
-    text-align: center;
+body{
+    margin:0;
+    font-family:Arial;
+    background: linear-gradient(135deg,#141e30,#243b55);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
 }
 
-header {
-    padding: 20px;
-    font-size: 24px;
-    font-weight: bold;
+.box{
+    background:#1f2a40;
+    padding:30px;
+    border-radius:15px;
+    width:320px;
+    text-align:center;
 }
 
-.hero {
-    padding: 80px 20px;
+input{
+    width:90%;
+    padding:10px;
+    margin:8px 0;
+    border:none;
+    border-radius:8px;
 }
 
-.hero h1 {
-    font-size: 40px;
+button{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    background:#00c853;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
 }
 
-.hero p {
-    font-size: 18px;
-    margin: 20px 0;
+.toggle{
+    margin-top:15px;
+    font-size:14px;
+    cursor:pointer;
+    color:#00e5ff;
 }
 
-.btn {
-    display: inline-block;
-    padding: 12px 25px;
-    background: #00c853;
-    color: white;
-    text-decoration: none;
-    border-radius: 30px;
-    font-weight: bold;
-}
-
-.section {
-    padding: 60px 20px;
-    background: #111;
-}
-
-.footer {
-    padding: 20px;
-    background: #000;
-    font-size: 14px;
+#dashboard{
+    display:none;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-CashFlow Community
-</header>
+<div class="box" id="authBox">
 
-<div class="hero">
-<h1>Learn. Earn. Grow Together.</h1>
-<p>India's Smart Student Earning Network</p>
-<a href="#" class="btn">Join Community</a>
+<h2 id="formTitle">Login</h2>
+
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
+
+<button onclick="handleAuth()">Login</button>
+
+<div class="toggle" onclick="toggleForm()">
+Don't have account? Signup
 </div>
 
-<div class="section">
-<h2>What We Offer</h2>
-<p>✔ Online Earning Guides</p>
-<p>✔ Skill Development</p>
-<p>✔ Referral Programs</p>
-<p>✔ Student Support Network</p>
+<p id="msg"></p>
+
 </div>
 
-<div class="footer">
-© 2026 CashFlow Community | All Rights Reserved
+<div class="box" id="dashboard">
+<h2>Welcome 🎉</h2>
+<p id="welcomeUser"></p>
+<button onclick="logout()">Logout</button>
 </div>
+
+<script>
+let isLogin = true;
+
+function toggleForm(){
+    isLogin = !isLogin;
+    document.getElementById("formTitle").innerText = isLogin ? "Login" : "Signup";
+    document.querySelector("button").innerText = isLogin ? "Login" : "Signup";
+    document.querySelector(".toggle").innerText = 
+        isLogin ? "Don't have account? Signup" : "Already have account? Login";
+}
+
+function handleAuth(){
+    let user = document.getElementById("username").value;
+    let pass = document.getElementById("password").value;
+
+    if(user==="" || pass===""){
+        document.getElementById("msg").innerText="Fill all fields!";
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem("users")) || {};
+
+    if(isLogin){
+        if(users[user] && users[user] === pass){
+            loginSuccess(user);
+        }else{
+            document.getElementById("msg").innerText="Invalid credentials!";
+        }
+    }else{
+        if(users[user]){
+            document.getElementById("msg").innerText="User already exists!";
+        }else{
+            users[user] = pass;
+            localStorage.setItem("users", JSON.stringify(users));
+            document.getElementById("msg").innerText="Signup successful! Now login.";
+            toggleForm();
+        }
+    }
+}
+
+function loginSuccess(user){
+    localStorage.setItem("loggedInUser", user);
+    showDashboard(user);
+}
+
+function showDashboard(user){
+    document.getElementById("authBox").style.display="none";
+    document.getElementById("dashboard").style.display="block";
+    document.getElementById("welcomeUser").innerText="Hello, "+user;
+}
+
+function logout(){
+    localStorage.removeItem("loggedInUser");
+    document.getElementById("dashboard").style.display="none";
+    document.getElementById("authBox").style.display="block";
+}
+
+window.onload = function(){
+    let user = localStorage.getItem("loggedInUser");
+    if(user){
+        showDashboard(user);
+    }
+}
+</script>
 
 </body>
 </html>
